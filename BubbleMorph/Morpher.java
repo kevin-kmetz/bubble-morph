@@ -7,57 +7,58 @@ import javax.imageio.ImageIO;
 
 public class Morpher {
 
-	Pixel[][] pixelRaster;
-	int rasterWidth;
-	int rasterHeight;
+	private Pixel[][] pixelRaster;
+	private final int rasterWidth;
+	private final int rasterHeight;
 
-	int numberOfSteps = 0;
-	int numberOfSwaps = 0;
+	private int numberOfSteps = 0;
+	private int numberOfSwaps = 0;
 
 	public Morpher(BufferedImage image) {
 
 		rasterHeight = image.getHeight();
 		rasterWidth = image.getWidth();
 
-		Pixel[] pixels = new Pixel[rasterWidth*rasterHeight];
+		pixelRaster = new Pixel[rasterHeight][rasterWidth];
 
+		// Extract pixel values from the BufferedImaged and put them into a custom raster.
 		for (int y = 0, currentOrdinality = 0; y < rasterHeight; y++) {
 
 			for (int x = 0; x < rasterWidth; x++) {
 
 				currentOrdinality = y*rasterWidth + x;
-				pixels[currentOrdinality] = new Pixel(x, y, image.getRGB(x, y), currentOrdinality); 
+
+				pixelRaster[y][x] = new Pixel(x, y, image.getRGB(x, y), currentOrdinality);
 
 			}
 
 		}
-
-		shuffle(pixels);
-
-		pixelRaster = new Pixel[rasterHeight][rasterWidth];
-
-		for (int y = 0; y < rasterHeight; y++) {
-
-			for (int x = 0; x < rasterWidth; x++) {
-
-				pixelRaster[y][x] = pixels[x*y];
-
-			}
-
-		}
-
-		outputImage(pixelRaster, "scrambled.png");
 
 	}
 
-	private void shuffle(Pixel[] pixels) {
+	public void shuffle() {
 
 		// Shuffles the array of pixels, by starting at the end, storing that pixel, selecting a random
 		// pixel from below that index, inserting it at the back, then putting the stored pixel back into
 		// the lower index. This guarantees actual random shuffling, which simple random element swapping does not.
 
+		Pixel[] pixels = new Pixel[rasterWidth*rasterHeight];
+
+		// Convert the 2D pixel raster into a linear 1D array (linearize the raster.)
+		for (int y = 0, currentOrdinality = 0; y < rasterHeight; y++) {
+
+			for (int x = 0; x < rasterWidth; x++) {
+
+				currentOrdinality = y*rasterWidth + x;
+				pixels[currentOrdinality] = pixelRaster[y][x]; 
+
+			}
+
+		}
+
 		Random random = new Random();
 
+		// Randomize the linearized raster.
 		for (int i = pixels.length-1; i > 0; i--) {
 
 			Pixel tempPixel = pixels[i];
@@ -69,18 +70,26 @@ public class Morpher {
 
 		}
 
+		// Convert the linearized raster back into an actual 2D raster (de-linearize it).
+		for (int y = 0; y < rasterHeight; y++) {
+
+			for (int x = 0; x < rasterWidth; x++) {
+
+				pixelRaster[y][x] = pixels[y*rasterWidth + x];
+
+			}
+
+		}
+
 	}
 
-	private void outputImage(Pixel[][] pixelRaster, String fileName) {
+	public void outputImage(String fileName) {
 
-		int rasterLength = pixelRaster[0].length;
-		int rasterHeight = pixelRaster.length;
-
-		BufferedImage outputImage = new BufferedImage(rasterLength, rasterHeight, BufferedImage.TYPE_INT_RGB);
+		BufferedImage outputImage = new BufferedImage(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_RGB);
 
 		for (int y = 0; y < rasterHeight; y++) {
 
-			for (int x = 0; x < rasterLength; x++) {
+			for (int x = 0; x < rasterWidth; x++) {
 
 				outputImage.setRGB(x, y, pixelRaster[y][x].getColor());
 
@@ -104,7 +113,7 @@ public class Morpher {
 
 	}
 
-	void step() {
+	public void step() {
 
 		bubbleSortRows(2);			// bubblesort even rows
 		bubbleSortColumns(2);		// bubblesort even columns
@@ -118,7 +127,7 @@ public class Morpher {
 
 	}
 
-	void bubbleSortRows(int startingRow) {
+	private void bubbleSortRows(int startingRow) {
 
 		for (int row = startingRow; row < rasterHeight; row+=2) {
 
@@ -136,7 +145,7 @@ public class Morpher {
 
 	}
 
-	void bubbleSortColumns(int startingColumn) {
+	private void bubbleSortColumns(int startingColumn) {
 
 		for (int column = startingColumn; column < rasterWidth; column+=2) {
 
@@ -154,13 +163,13 @@ public class Morpher {
 
 	}
 
-	void bubbleSortEdges(int startingRow) {
+	private void bubbleSortEdges(int startingRow) {
 
 		for (int row = startingRow; row < rasterHeight-1; row+=2) {
 
 			if (pixelRaster[row][rasterWidth-1].ordinality > pixelRaster[row+1][0].ordinality) {
 
-				swapPixels(pixelRaster[row]rasterWidth-1], pixelRaster[row+1][0]);
+				swapPixels(pixelRaster[row][rasterWidth-1], pixelRaster[row+1][0]);
 
 			}
 
@@ -168,19 +177,22 @@ public class Morpher {
 
 	}
 
-	void swapPixels(Pixel pixelOne, Pixel pixelTwo) {
+	private void swapPixels(Pixel pixelOne, Pixel pixelTwo) {
 
-		Pixel pixelOneTemp = new Pixel(pixelOne.x, pixelOne.y, pixelOne.getColor());
-		Pixel pixelTwoTemp = new Pixel(pixelTwo.x, pixelOne.y, pixelTwo.getColor());
+		Pixel pixelOneTemp = new Pixel(pixelOne.x, pixelOne.y, pixelOne.getColor(), pixelOne.ordinality);
+		Pixel pixelTwoTemp = new Pixel(pixelTwo.x, pixelTwo.y, pixelTwo.getColor(), pixelTwo.ordinality);
 
-		pixelOne = pixelTwoTemp;
-		pixelTwo = pixelOneTemp;
+		//pixelOne = pixelTwoTemp;
+		//pixelTwo = pixelOneTemp;
+
+		pixelOne = new Pixel(pixelTwoTemp.x, pixelTwoTemp.y, pixelTwoTemp.getColor(), pixelTwoTemp.ordinality);
+		pixelTwo = new Pixel(pixelOneTemp.x, pixelOneTemp.y, pixelOneTemp.getColor(), pixelOneTemp.ordinality);
 
 		numberOfSwaps++;
 
 	}
 
-	boolean isSorted() {
+	public boolean isSorted() {
 
 		boolean rasterIsSorted = true;
 
@@ -198,7 +210,7 @@ public class Morpher {
 
 			if (row != rasterHeight-1) {
 
-				if (pixelRaster[row][rasterWidth-1] > pixelRaster[row+1][0]) {
+				if (pixelRaster[row][rasterWidth-1].ordinality > pixelRaster[row+1][0].ordinality) {
 
 					rasterIsSorted = false;
 
@@ -207,6 +219,20 @@ public class Morpher {
 			}
 
 		}
+
+		return rasterIsSorted;
+
+	}
+
+	public int getNumberOfSteps() {
+
+		return numberOfSteps;
+
+	}
+
+	public int getNumberOfSwaps() {
+
+		return numberOfSwaps;
 
 	}
 
