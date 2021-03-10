@@ -38,11 +38,16 @@ public class MorpherTest {
 			while (!morpher.isSorted()) {
 
 				morpher.step();
-				morpher.outputImage(outputNameBase + String.format("%06d", morpher.getNumberOfSteps()) + ".png");
 
-				System.out.println("Steps completed: " + morpher.getNumberOfSteps());
-				System.out.println("Number of swaps: " + morpher.getNumberOfSwaps());
-				System.out.println();
+				if (morpher.getNumberOfSteps() % 100 == 0) {
+
+					morpher.outputImage(outputNameBase + String.format("%06d", morpher.getNumberOfSteps()/100) + ".png");
+
+					System.out.println("Steps completed: " + morpher.getNumberOfSteps());
+					System.out.println("Number of swaps: " + morpher.getNumberOfSwaps());
+					System.out.println();
+
+				}
 
 			}
 

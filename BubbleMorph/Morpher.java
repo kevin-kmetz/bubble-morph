@@ -135,7 +135,12 @@ public class Morpher {
 
 				if (pixelRaster[row][column].ordinality < pixelRaster[row-1][column].ordinality) {
 
-					swapPixels(pixelRaster[row][column], pixelRaster[row-1][column]);
+					Pixel tempPixel = pixelRaster[row][column];
+
+					pixelRaster[row][column] = pixelRaster[row-1][column];
+					pixelRaster[row-1][column] = tempPixel;
+
+					numberOfSwaps++;
 
 				}
 
@@ -153,7 +158,12 @@ public class Morpher {
 
 				if (pixelRaster[row][column].ordinality < pixelRaster[row][column-1].ordinality) {
 
-					swapPixels(pixelRaster[row][column], pixelRaster[row][column-1]);
+					Pixel tempPixel = pixelRaster[row][column];
+
+					pixelRaster[row][column] = pixelRaster[row][column-1];
+					pixelRaster[row][column-1] = tempPixel;
+
+					numberOfSwaps++;
 
 				}
 
@@ -169,26 +179,16 @@ public class Morpher {
 
 			if (pixelRaster[row][rasterWidth-1].ordinality > pixelRaster[row+1][0].ordinality) {
 
-				swapPixels(pixelRaster[row][rasterWidth-1], pixelRaster[row+1][0]);
+				Pixel tempPixel = pixelRaster[row][rasterWidth-1];
+
+				pixelRaster[row][rasterWidth-1] = pixelRaster[row+1][0];
+				pixelRaster[row+1][0] = tempPixel;
+
+				numberOfSwaps++;
 
 			}
 
 		}
-
-	}
-
-	private void swapPixels(Pixel pixelOne, Pixel pixelTwo) {
-
-		Pixel pixelOneTemp = new Pixel(pixelOne.x, pixelOne.y, pixelOne.getColor(), pixelOne.ordinality);
-		Pixel pixelTwoTemp = new Pixel(pixelTwo.x, pixelTwo.y, pixelTwo.getColor(), pixelTwo.ordinality);
-
-		//pixelOne = pixelTwoTemp;
-		//pixelTwo = pixelOneTemp;
-
-		pixelOne = new Pixel(pixelTwoTemp.x, pixelTwoTemp.y, pixelTwoTemp.getColor(), pixelTwoTemp.ordinality);
-		pixelTwo = new Pixel(pixelOneTemp.x, pixelOneTemp.y, pixelOneTemp.getColor(), pixelOneTemp.ordinality);
-
-		numberOfSwaps++;
 
 	}
 
