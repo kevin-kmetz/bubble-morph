@@ -21,11 +21,12 @@ public class Morpher {
 
 		Pixel[] pixels = new Pixel[rasterWidth*rasterHeight];
 
-		for (int y = 0; y < rasterHeight; y++) {
+		for (int y = 0, currentOrdinality = 0; y < rasterHeight; y++) {
 
 			for (int x = 0; x < rasterWidth; x++) {
 
-				pixels[y*rasterWidth + x] = new Pixel(x, y, image.getRGB(x, y)); 
+				currentOrdinality = y*rasterWidth + x;
+				pixels[currentOrdinality] = new Pixel(x, y, image.getRGB(x, y), currentOrdinality); 
 
 			}
 
@@ -106,12 +107,12 @@ public class Morpher {
 	void step() {
 
 		bubbleSortRows(2);			// bubblesort even rows
-		bubbleSortColumns(2);	// bubblesort even columns
-		bubbleSortEdges(0);		// bubblesort edges of even rows
+		bubbleSortColumns(2);		// bubblesort even columns
+		bubbleSortEdges(0);			// bubblesort edges of even rows
 
-		bubbleSortRows(1);		// bubblesort odd rows
+		bubbleSortRows(1);			// bubblesort odd rows
 		bubbleSortColumns(1);		// bubblesort odd columns
-		bubbleSortEdges(1);		// bubblesort edges of odd rows
+		bubbleSortEdges(1);			// bubblesort edges of odd rows
 
 		numberOfSteps++;
 
@@ -123,7 +124,7 @@ public class Morpher {
 
 			for (int column = 0; column < rasterWidth; column++) {
 
-				if (pixelRaster[row][column].y < pixelRaster[row-1][column].y) {
+				if (pixelRaster[row][column].ordinality < pixelRaster[row-1][column].ordinality) {
 
 					swapPixels(pixelRaster[row][column], pixelRaster[row-1][column]);
 
@@ -141,7 +142,7 @@ public class Morpher {
 
 			for (int row = 0; row < rasterHeight; row++) {
 
-				if (pixelRaster[row][column].x < pixelRaster[row][column-1].x) {
+				if (pixelRaster[row][column].ordinality < pixelRaster[row][column-1].ordinality) {
 
 					swapPixels(pixelRaster[row][column], pixelRaster[row][column-1]);
 
@@ -157,7 +158,7 @@ public class Morpher {
 
 		for (int row = startingRow; row < rasterHeight-1; row+=2) {
 
-			if (pixelRaster[row][rasterWidth-1] > pixelRaster[row+1][0]) {
+			if (pixelRaster[row][rasterWidth-1].ordinality > pixelRaster[row+1][0].ordinality) {
 
 				swapPixels(pixelRaster[row]rasterWidth-1], pixelRaster[row+1][0]);
 
@@ -176,6 +177,36 @@ public class Morpher {
 		pixelTwo = pixelOneTemp;
 
 		numberOfSwaps++;
+
+	}
+
+	boolean isSorted() {
+
+		boolean rasterIsSorted = true;
+
+		for (int row = 0; row < rasterHeight && rasterIsSorted; row++) {
+
+			for (int column = 0; column < rasterWidth-1 && rasterIsSorted; column++) {
+
+				if (pixelRaster[row][column].ordinality > pixelRaster[row][column+1].ordinality) {
+
+					rasterIsSorted = false;
+
+				}
+
+			}
+
+			if (row != rasterHeight-1) {
+
+				if (pixelRaster[row][rasterWidth-1] > pixelRaster[row+1][0]) {
+
+					rasterIsSorted = false;
+
+				}
+
+			}
+
+		}
 
 	}
 
