@@ -105,22 +105,77 @@ public class Morpher {
 
 	void step() {
 
-		bubbleSortEvenRows();
-		bubbleSortEvenColumns();
-		bubbleSortEvenEnds();
+		bubbleSortRows(2);			// bubblesort even rows
+		bubbleSortColumns(2);	// bubblesort even columns
+		bubbleSortEdges(0);		// bubblesort edges of even rows
 
-		bubbleSortOddRows();
-		bubbleSortOddColumns();
-		bubbleSortOddEnds();
+		bubbleSortRows(1);		// bubblesort odd rows
+		bubbleSortColumns(1);		// bubblesort odd columns
+		bubbleSortEdges(1);		// bubblesort edges of odd rows
+
+		numberOfSteps++;
 
 	}
 
-	void bubbleSortEvenRows() {
+	void bubbleSortRows(int startingRow) {
 
-		for (int row = 2; row < rasterHeight; row+=2) {
+		for (int row = startingRow; row < rasterHeight; row+=2) {
 
+			for (int column = 0; column < rasterWidth; column++) {
+
+				if (pixelRaster[row][column].y < pixelRaster[row-1][column].y) {
+
+					swapPixels(pixelRaster[row][column], pixelRaster[row-1][column]);
+
+				}
+
+			}
 
 		}
+
+	}
+
+	void bubbleSortColumns(int startingColumn) {
+
+		for (int column = startingColumn; column < rasterWidth; column+=2) {
+
+			for (int row = 0; row < rasterHeight; row++) {
+
+				if (pixelRaster[row][column].x < pixelRaster[row][column-1].x) {
+
+					swapPixels(pixelRaster[row][column], pixelRaster[row][column-1]);
+
+				}
+
+			}
+
+		}
+
+	}
+
+	void bubbleSortEdges(int startingRow) {
+
+		for (int row = startingRow; row < rasterHeight-1; row+=2) {
+
+			if (pixelRaster[row][rasterWidth-1] > pixelRaster[row+1][0]) {
+
+				swapPixels(pixelRaster[row]rasterWidth-1], pixelRaster[row+1][0]);
+
+			}
+
+		}
+
+	}
+
+	void swapPixels(Pixel pixelOne, Pixel pixelTwo) {
+
+		Pixel pixelOneTemp = new Pixel(pixelOne.x, pixelOne.y, pixelOne.getColor());
+		Pixel pixelTwoTemp = new Pixel(pixelTwo.x, pixelOne.y, pixelTwo.getColor());
+
+		pixelOne = pixelTwoTemp;
+		pixelTwo = pixelOneTemp;
+
+		numberOfSwaps++;
 
 	}
 
