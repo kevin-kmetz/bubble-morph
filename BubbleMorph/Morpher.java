@@ -7,19 +7,25 @@ import javax.imageio.ImageIO;
 
 public class Morpher {
 
+	Pixel[][] pixelRaster;
+	int rasterWidth;
+	int rasterHeight;
+
+	int numberOfSteps = 0;
+	int numberOfSwaps = 0;
 
 	public Morpher(BufferedImage image) {
 
-		int height = image.getHeight();
-		int width = image.getWidth();
+		rasterHeight = image.getHeight();
+		rasterWidth = image.getWidth();
 
-		Pixel[] pixels = new Pixel[width*height];
+		Pixel[] pixels = new Pixel[rasterWidth*rasterHeight];
 
-		for (int y = 0; y < height; y++) {
+		for (int y = 0; y < rasterHeight; y++) {
 
-			for (int x = 0; x < width; x++) {
+			for (int x = 0; x < rasterWidth; x++) {
 
-				pixels[y*width + x] = new Pixel(x, y, image.getRGB(x, y)); 
+				pixels[y*rasterWidth + x] = new Pixel(x, y, image.getRGB(x, y)); 
 
 			}
 
@@ -27,11 +33,11 @@ public class Morpher {
 
 		shuffle(pixels);
 
-		Pixel[][] pixelRaster = new Pixel[height][width];
+		pixelRaster = new Pixel[rasterHeight][rasterWidth];
 
-		for (int y = 0; y < height; y++) {
+		for (int y = 0; y < rasterHeight; y++) {
 
-			for (int x = 0; x < width; x++) {
+			for (int x = 0; x < rasterWidth; x++) {
 
 				pixelRaster[y][x] = pixels[x*y];
 
@@ -39,7 +45,7 @@ public class Morpher {
 
 		}
 
-		outputScrambledImage(pixelRaster);
+		outputImage(pixelRaster, "scrambled.png");
 
 	}
 
@@ -64,7 +70,7 @@ public class Morpher {
 
 	}
 
-	private void outputScrambledImage(Pixel[][] pixelRaster) {
+	private void outputImage(Pixel[][] pixelRaster, String fileName) {
 
 		int rasterLength = pixelRaster[0].length;
 		int rasterHeight = pixelRaster.length;
@@ -83,7 +89,7 @@ public class Morpher {
 
 		try {
 
-			File outputFile = new File("scrambled.png");
+			File outputFile = new File(fileName);
 			outputFile.createNewFile();
 
 			ImageIO.write(outputImage, "png", outputFile);
@@ -92,6 +98,27 @@ public class Morpher {
 
 			System.out.println("Error - unable to output image!");
 			e.printStackTrace();
+
+		}
+
+	}
+
+	void step() {
+
+		bubbleSortEvenRows();
+		bubbleSortEvenColumns();
+		bubbleSortEvenEnds();
+
+		bubbleSortOddRows();
+		bubbleSortOddColumns();
+		bubbleSortOddEnds();
+
+	}
+
+	void bubbleSortEvenRows() {
+
+		for (int row = 2; row < rasterHeight; row+=2) {
+
 
 		}
 

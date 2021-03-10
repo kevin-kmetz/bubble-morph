@@ -10,8 +10,13 @@ public class MorpherTest {
 
 	public static void main(String[] args) {
 
-		MorpherTest test = new MorpherTest(args[0]);
+		if (args.length == 1) {
 
+			MorpherTest test = new MorpherTest(args[0]);
+
+		}
+
+		System.out.println("Error - you need to specify a file to morph!");
 	}
 
 	MorpherTest(String fileName) {
