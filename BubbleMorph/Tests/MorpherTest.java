@@ -35,17 +35,20 @@ public class MorpherTest {
 
 			BufferedImage testImage = ImageIO.read(new File(fileName));
 
+			File folder = new File(outputName);
+			folder.mkdir();
+
+			String fileNamePrefix = "./" + outputName + "/" + outputName + "_";
+
 			Morpher morpher = new Morpher(testImage);
 
-			String outputNameBase = outputName;
-
-			morpher.outputImage(outputNameBase + "unaltered.png");
+			morpher.outputImage(fileNamePrefix + "_unaltered.png");
 
 			morpher.shuffle();
 
 			int frameNumber = 0;
 
-			morpher.outputImage(outputNameBase + String.format("%05d", frameNumber) + ".png");
+			morpher.outputImage(fileNamePrefix + String.format("%05d", frameNumber) + ".png");
 
 			frameNumber++;
 
@@ -55,7 +58,7 @@ public class MorpherTest {
 
 				if (morpher.getNumberOfSteps() % stepsPerFrame == 0) {
 
-					morpher.outputImage(outputNameBase + String.format("%05d", frameNumber) + ".png");
+					morpher.outputImage(fileNamePrefix + String.format("%05d", frameNumber) + ".png");
 					frameNumber++;
 
 					System.out.println("Steps completed: " + morpher.getNumberOfSteps());
@@ -68,7 +71,7 @@ public class MorpherTest {
 
 
 			// Output the final fully sorted frame.
-			morpher.outputImage(outputNameBase + String.format("%05d", frameNumber) + ".png");
+			morpher.outputImage(fileNamePrefix + String.format("%05d", frameNumber) + ".png");
 			System.out.println("Done!");
 
 		} catch (Exception e) {
