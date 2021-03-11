@@ -10,16 +10,26 @@ public class MorpherTest {
 
 	public static void main(String[] args) {
 
-		if (args.length == 1) {
+		if (args.length == 1 || args.length == 2) {
 
-			MorpherTest test = new MorpherTest(args[0]);
+			String outputName = "unnamed_";
+
+			if (args.length == 2) {
+
+				outputName = args[1];
+
+			}
+
+			MorpherTest test = new MorpherTest(args[0], outputName);
 
 		}
 
 		System.out.println("Error - you need to specify a file to morph!");
 	}
 
-	MorpherTest(String fileName) {
+	MorpherTest(String fileName, String outputName) {
+
+		int stepsPerFrame = 1;
 
 		try {
 
@@ -27,21 +37,26 @@ public class MorpherTest {
 
 			Morpher morpher = new Morpher(testImage);
 
-			String outputNameBase = "bubble";
+			String outputNameBase = outputName;
 
-			morpher.outputImage(outputNameBase + "-unaltered.png");
+			morpher.outputImage(outputNameBase + "unaltered.png");
 
 			morpher.shuffle();
 
-			morpher.outputImage(outputNameBase + String.format("%06d", morpher.getNumberOfSteps()) + ".png");
+			int frameNumber = 0;
+
+			morpher.outputImage(outputNameBase + String.format("%05d", frameNumber) + ".png");
+
+			frameNumber++;
 
 			while (!morpher.isSorted()) {
 
 				morpher.step();
 
-				if (morpher.getNumberOfSteps() % 100 == 0) {
+				if (morpher.getNumberOfSteps() % stepsPerFrame == 0) {
 
-					morpher.outputImage(outputNameBase + String.format("%06d", morpher.getNumberOfSteps()/100) + ".png");
+					morpher.outputImage(outputNameBase + String.format("%05d", frameNumber) + ".png");
+					frameNumber++;
 
 					System.out.println("Steps completed: " + morpher.getNumberOfSteps());
 					System.out.println("Number of swaps: " + morpher.getNumberOfSwaps());
@@ -51,6 +66,9 @@ public class MorpherTest {
 
 			}
 
+
+			// Output the final fully sorted frame.
+			morpher.outputImage(outputNameBase + String.format("%05d", frameNumber) + ".png");
 			System.out.println("Done!");
 
 		} catch (Exception e) {
