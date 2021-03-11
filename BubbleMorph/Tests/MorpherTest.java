@@ -10,26 +10,34 @@ public class MorpherTest {
 
 	public static void main(String[] args) {
 
-		if (args.length == 1 || args.length == 2) {
+		if (args.length >= 1 && args.length <= 3) {
 
-			String outputName = "unnamed_";
+			String outputName = "unnamed";
+			int stepsPerFrame = 1;
 
-			if (args.length == 2) {
+			if (args.length >= 2) {
 
 				outputName = args[1];
 
 			}
 
-			MorpherTest test = new MorpherTest(args[0], outputName);
+			if (args.length == 3) {
+
+				stepsPerFrame = Integer.parseInt(args[2]);
+
+			}
+
+			MorpherTest test = new MorpherTest(args[0], outputName, stepsPerFrame);
+
+		} else {
+
+			System.out.println("Error - you need to specify a file to morph!");
 
 		}
 
-		System.out.println("Error - you need to specify a file to morph!");
 	}
 
-	MorpherTest(String fileName, String outputName) {
-
-		int stepsPerFrame = 1;
+	MorpherTest(String fileName, String outputName, int stepsPerFrame) {
 
 		try {
 
